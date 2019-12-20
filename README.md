@@ -1,5 +1,5 @@
 # Wrapit
-python command-line wrapping tool for c code base.\n
+python command-line wrapping tool for c code base.
 Pass <file_name.c> and <filename.i> as command-line arguments.
 example:
   For Python3 
