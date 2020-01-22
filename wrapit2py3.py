@@ -14,21 +14,29 @@ def check_swig():
 	checked = subprocess.check_output(["whereis","swig"])
 	checked = checked.strip()
 	checked = checked.decode('ascii')
+	# print(checked)
 	checked = checked[7:]
+	# print(checked)
 	return checked
 
 def generate_wrap_and_py_file(i_file,path):
 
 	os.chdir(path)
-	subprocess.call(["swig","-python","{}".format(i_file)])
+	check_generation = subprocess.check_output(["swig","-python","{}".format(i_file)])
+	check_generation = check_generation.decode('ascii')
+	return check_generation
 
 def compile_generated_files(wrap_file,c_file):
 
-	subprocess.call(["gcc","-c", "-fpic", "{}".format(wrap_file), "{}".format(c_file), "-I/usr/include/python3.6m"])
+	check_compilation = subprocess.check_output(["gcc","-c", "-fpic", "{}".format(wrap_file), "{}".format(c_file), "-I/usr/include/python3.6m"])
+	check_compilation = check_compilation.decode('ascii')
+	return check_compilation
 
 def generate_shared_object_files(object_file,wrap_object_file,file_name_raw):
 
-	subprocess.call(["gcc","-shared", "{}".format(object_file), "{}".format(wrap_object_file), "-o", "_{}.so".format(file_name_raw)])
+	check_shared_obj_generation = subprocess.check_output(["gcc","-shared", "{}".format(object_file), "{}".format(wrap_object_file), "-o", "_{}.so".format(file_name_raw)])
+	check_shared_obj_generation = check_shared_obj_generation.decode('ascii')
+	return check_shared_obj_generation
 
 def main():
 
@@ -44,7 +52,9 @@ def main():
 		os.mkdir(path)
 		copy2(c_file,path)
 		copy2(i_file,path)
-		generate_wrap_and_py_file(i_file,path)
+		check_generation = generate_wrap_and_py_file(i_file,path)
+		if(check_generation is not ""):
+			exit()
 	else:
 		print("Please install swig to continue.")
 		exit()
@@ -52,14 +62,20 @@ def main():
 	wrap_file = c_file[:-2]+"_wrap.c"
 	py_file = c_file[:-2]+".py"
 	print("Compiling generated files.....")
-	compile_generated_files(wrap_file,c_file)
-	print("Compiled generated files successfully!!")
+	check_compilation = compile_generated_files(wrap_file,c_file)
+	if(check_compilation is not ""):
+		exit()
+	else:
+		print("Compiled generated files successfully!!")
 	object_file = c_file[:-2]+".o"
 	wrap_object_file = c_file[:-2]+"_wrap.o"
 	file_name_raw = c_file[:-2]
 	print("Generating shared object file.....")
-	generate_shared_object_files(object_file,wrap_object_file,file_name_raw)
-	print("Python3 wrapper for {} is successfully generated!!".format(c_file))
+	check_shared_obj_generation = generate_shared_object_files(object_file,wrap_object_file,file_name_raw)
+	if(check_shared_obj_generation is not ""):
+		exit()
+	else:
+		print("Python3 wrapper for {} is successfully generated!!".format(c_file))
 
 if __name__ == '__main__':
 	
