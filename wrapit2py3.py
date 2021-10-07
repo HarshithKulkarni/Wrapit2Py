@@ -28,7 +28,7 @@ def generate_wrap_and_py_file(i_file,path):
 
 def compile_generated_files(wrap_file,c_file):
 
-	check_compilation = subprocess.check_output(["gcc","-c", "-fpic", "{}".format(wrap_file), "{}".format(c_file), "-I/usr/include/python3.6m"])
+	check_compilation = subprocess.check_output(["gcc","-c", "-fpic", "{}".format(wrap_file), "{}".format(c_file), "-I/usr/include/python3.8"])
 	check_compilation = check_compilation.decode('ascii')
 	return check_compilation
 
@@ -46,14 +46,14 @@ def main():
 	args = parser.parse_args()
 	c_file , i_file = get_file_names(args)
 	checked = check_swig()
-	if(checked is not ""):
+	if(checked!=""):
 		print("swig found, generating wrap and py files....")
 		path = "{}_wrap_files_py3".format(c_file[:-2])
 		os.mkdir(path)
 		copy2(c_file,path)
 		copy2(i_file,path)
 		check_generation = generate_wrap_and_py_file(i_file,path)
-		if(check_generation is not ""):
+		if(check_generation!=""):
 			exit()
 	else:
 		print("Please install swig to continue.")
@@ -63,7 +63,7 @@ def main():
 	py_file = c_file[:-2]+".py"
 	print("Compiling generated files.....")
 	check_compilation = compile_generated_files(wrap_file,c_file)
-	if(check_compilation is not ""):
+	if(check_compilation!=""):
 		exit()
 	else:
 		print("Compiled generated files successfully!!")
@@ -72,7 +72,7 @@ def main():
 	file_name_raw = c_file[:-2]
 	print("Generating shared object file.....")
 	check_shared_obj_generation = generate_shared_object_files(object_file,wrap_object_file,file_name_raw)
-	if(check_shared_obj_generation is not ""):
+	if(check_shared_obj_generation!=""):
 		exit()
 	else:
 		print("Python3 wrapper for {} is successfully generated!!".format(c_file))
